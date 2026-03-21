@@ -1,0 +1,269 @@
+/* ============================================================
+   src/app/globals.css — Manki Party Global Styles
+   Theme: Vanda Black → Yellow/Orange gradient
+   ============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── CSS Variables ────────────────────────────────────────── */
+:root {
+  --saffron:       #FF6B00;
+  --saffron-light: #FF8C38;
+  --gold:          #FFD700;
+  --gold-dark:     #E5B800;
+  --vanda:         #0A0A0F;
+  --vanda-mid:     #111118;
+  --vanda-light:   #1A1A28;
+  --vanda-surface: #22223A;
+  --border:        rgba(255, 107, 0, 0.15);
+  --border-gold:   rgba(255, 215, 0, 0.2);
+  --text:          #F5F5F0;
+  --text-dim:      #A0A0B0;
+  --text-muted:    #666680;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--vanda);
+  color: var(--text);
+  font-family: var(--font-outfit), sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--vanda); }
+::-webkit-scrollbar-thumb {
+  background:    linear-gradient(var(--gold), var(--saffron));
+  border-radius: 99px;
+}
+
+/* ── Grain overlay (atmospheric texture) ─────────────────── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 128px;
+  animation: grain 0.4s steps(1) infinite;
+}
+
+/* ── SEO Strip on headings ────────────────────────────────── */
+.seo-strip {
+  position: relative;
+  display: inline-block;
+}
+.seo-strip::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--saffron));
+  border-radius: 2px;
+}
+.seo-strip-thin::after { height: 2px; bottom: -2px; }
+.seo-strip-full {
+  display: block;
+}
+.seo-strip-full::after { width: 100%; }
+
+/* ── 3D Card effect ──────────────────────────────────────── */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  will-change: transform;
+}
+.card-3d:hover {
+  transform: translateY(-4px) rotateX(2deg) rotateY(-1deg);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,107,0,0.2), 0 0 40px rgba(255,107,0,0.08);
+}
+
+/* ── Glassmorphism ────────────────────────────────────────── */
+.glass {
+  background:   rgba(17, 17, 24, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 107, 0, 0.12);
+}
+.glass-gold {
+  background:   rgba(255, 215, 0, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+/* ── Animated gradient border ────────────────────────────── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--gold), var(--saffron), var(--gold));
+  background-size: 200% 200%;
+  animation: stripeScroll 3s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Message bubbles ─────────────────────────────────────── */
+.msg-bubble-sent {
+  background: linear-gradient(135deg, rgba(255,107,0,0.25), rgba(255,215,0,0.1));
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: 18px 18px 4px 18px;
+}
+.msg-bubble-recv {
+  background: rgba(26,26,40,0.9);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* ── Navigation active state ─────────────────────────────── */
+.nav-active {
+  background: linear-gradient(135deg, rgba(255,107,0,0.2), rgba(255,215,0,0.08));
+  border: 1px solid rgba(255,107,0,0.25);
+  color: var(--gold);
+}
+
+/* ── Input styles ────────────────────────────────────────── */
+.input-manki {
+  background:    rgba(26,26,40,0.8);
+  border:        1px solid rgba(255,107,0,0.2);
+  border-radius: 12px;
+  color:         var(--text);
+  font-family:   var(--font-outfit);
+  font-size:     15px;
+  padding:       12px 16px;
+  width:         100%;
+  transition:    border-color 0.2s, box-shadow 0.2s;
+  outline:       none;
+}
+.input-manki:focus {
+  border-color: var(--saffron);
+  box-shadow:   0 0 0 3px rgba(255,107,0,0.15);
+}
+.input-manki::placeholder { color: var(--text-muted); }
+
+/* ── Button styles ───────────────────────────────────────── */
+.btn-manki {
+  background:    linear-gradient(135deg, var(--gold), var(--saffron));
+  color:         #0A0A0F;
+  font-family:   var(--font-baloo);
+  font-weight:   700;
+  font-size:     15px;
+  letter-spacing: 0.5px;
+  padding:       12px 28px;
+  border-radius: 12px;
+  border:        none;
+  cursor:        pointer;
+  transition:    transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  position:      relative;
+  overflow:      hidden;
+}
+.btn-manki:hover {
+  transform:  translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255,107,0,0.4);
+}
+.btn-manki:active { transform: translateY(0); }
+.btn-manki:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+  background:    transparent;
+  color:         var(--text-dim);
+  border:        1px solid rgba(255,107,0,0.2);
+  font-family:   var(--font-outfit);
+  font-weight:   500;
+  padding:       10px 22px;
+  border-radius: 12px;
+  cursor:        pointer;
+  transition:    all 0.2s;
+}
+.btn-ghost:hover {
+  border-color: var(--saffron);
+  color:        var(--saffron);
+  background:   rgba(255,107,0,0.05);
+}
+
+/* ── Hierarchy badge ─────────────────────────────────────── */
+.hierarchy-badge {
+  font-family:   var(--font-baloo);
+  font-size:     10px;
+  font-weight:   700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding:       3px 10px;
+  border-radius: 99px;
+}
+
+/* ── Online indicator ────────────────────────────────────── */
+.online-dot {
+  width:         9px;
+  height:        9px;
+  border-radius: 50%;
+  background:    #22C55E;
+  box-shadow:    0 0 8px #22C55E;
+  animation:     glowPulse 2s ease-in-out infinite;
+}
+
+/* ── Typing dots ─────────────────────────────────────────── */
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%,80%,100% { transform: translateY(0); opacity: 0.5; }
+  40%         { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ── Page transitions ────────────────────────────────────── */
+.page-enter { animation: slideUp 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+
+/* ── Unread badge ────────────────────────────────────────── */
+.unread-badge {
+  background: linear-gradient(135deg, var(--saffron), #E55A00);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 0 10px rgba(255,107,0,0.5);
+}
+
+/* ── Profile verification badge ─────────────────────────── */
+.verified-badge {
+  background: linear-gradient(135deg, var(--gold), var(--saffron));
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 0 10px rgba(255,215,0,0.4);
+}

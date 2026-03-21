@@ -1,0 +1,552 @@
+// ============================================================
+// prisma/schema.prisma
+// Manki Party — Full Indian Political Hierarchy Data Model
+//
+// Hierarchy (bottom → top):
+// Tola → Ward → Village → Panchayat →
+// GramPanchayat/NagarPanchayat →
+// Block/NagarSamiti/NagarParishad → ZilaParishad → State
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Use POSTGRES_PRISMA_URL (pooled) for normal queries
+  // Use POSTGRES_URL_NON_POOLING for migrations
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_MIGRATE")
+}
+
+// ─── LOCATION HIERARCHY ──────────────────────────────────────
+
+enum AdminLevel {
+  TOLA          // Smallest unit — hamlet
+  WARD          // Ward within village/town
+  VILLAGE       // Village
+  PANCHAYAT     // Panchayat (cluster of villages)
+  GRAM_PANCHAYAT    // Gram Panchayat / Nagar Panchayat
+  BLOCK             // Block / Nagar Samiti / Nagar Parishad
+  ZILA_PARISHAD     // District council
+  STATE_COMMITTEE   // State level
+}
+
+model Location {
+  id         String     @id @default(uuid())
+  name       String
+  level      AdminLevel
+  parentId   String?
+  parent     Location?  @relation("LocationTree", fields: [parentId], references: [id])
+  children   Location[] @relation("LocationTree")
+  pincode    String?
+  state      String     @default("Uttar Pradesh")
+  // Closure table path for fast ancestor queries (e.g. "state_id.zila_id.block_id")
+  pathIds    String     @default("")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  committees Committee[]
+  users      User[]
+  feedPosts  FeedPost[]
+
+  @@index([level])
+  @@index([parentId])
+  @@index([pathIds])
+}
+
+// ─── ROLES & COMMITTEES ──────────────────────────────────────
+
+enum PostLevel {
+  PRESIDENT       // Adhyaksha
+  VICE_PRESIDENT  // Upa-Adhyaksha
+  SECRETARY       // Mantri
+  JOINT_SECRETARY // Sah-Mantri
+  TREASURER       // Koshaadhyaksha
+  SPOKESPERSON    // Praavakta
+  YOUTH_WING      // Yuva
+  WOMEN_WING      // Mahila
+  KARYAKARTA      // General worker
+  OBSERVER        // Observer (can view only)
+}
+
+model Committee {
+  id          String     @id @default(uuid())
+  name        String
+  level       AdminLevel
+  locationId  String
+  location    Location   @relation(fields: [locationId], references: [id])
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  memberships Membership[]
+  chatRooms   ChatRoom[]
+
+  @@unique([locationId, level])
+  @@index([level])
+}
+
+model Membership {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  committeeId String
+  committee   Committee  @relation(fields: [committeeId], references: [id])
+  post        PostLevel
+  isVerified  Boolean    @default(false)
+  verifiedBy  String?    // User ID of verifier
+  joinedAt    DateTime   @default(now())
+  tenureEnd   DateTime?
+  isActive    Boolean    @default(true)
+
+  @@unique([userId, committeeId])
+  @@index([committeeId])
+  @@index([userId])
+}
+
+// ─── USER ────────────────────────────────────────────────────
+
+model User {
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  passwordHash       String
+  fullName           String
+  age                Int?
+  phone              String?
+  whatsapp           String?
+  profilePictureUrl  String?
+  aboutMe            String?   @db.Text
+  // Address (stored as JSON for flexible Indian address structure)
+  address            Json?
+  // Designated post — set at registration, not editable by user
+  designatedPost     PostLevel @default(KARYAKARTA)
+  // Primary location
+  locationId         String
+  location           Location  @relation(fields: [locationId], references: [id])
+  isVerified         Boolean   @default(false)
+  isActive           Boolean   @default(true)
+  isBanned           Boolean   @default(false)
+  banReason          String?
+  // Profile verification badge
+  isPostVerified     Boolean   @default(false)
+  // Security
+  securityQuestion   String?
+  securityAnswer     String?   // Hashed
+  // Privacy Settings
+  showAddress        Boolean   @default(true)
+  showContacts       Boolean   @default(true)
+
+  lastLoginAt        DateTime?
+  lastActiveAt       DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  memberships        Membership[]
+  sentMessages       Message[]         @relation("SentMessages")
+  chatRoomMembers    ChatRoomMember[]
+  notifications      Notification[]    @relation("UserNotifications")
+  triggeredNotifs    Notification[]    @relation("TriggeredBy")
+  otpRecords         OtpRecord[]
+  sessions           Session[]
+  auditLogs          AuditLog[]
+  campaigns          Campaign[]
+  events             Event[]
+  polls              Poll[]
+  pollVotes          PollVote[]
+  tasks              Task[]            @relation("AssignedTasks")
+  createdTasks       Task[]            @relation("CreatedTasks")
+  reportsMade        Report[]          @relation("ReportsMade")
+  reportsReceived    Report[]          @relation("ReportsReceived")
+  reactions          MessageReaction[]
+  pinnedMessages     PinnedMessage[]
+  volunteerLogs      VolunteerLog[]
+  feedPosts          FeedPost[]
+
+  @@index([locationId])
+  @@index([email])
+  @@index([designatedPost])
+}
+
+// ─── AUTH ────────────────────────────────────────────────────
+
+model OtpRecord {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email       String
+  otp         String   // Hashed
+  purpose     OtpPurpose
+  attempts    Int      @default(0)
+  isUsed      Boolean  @default(false)
+  expiresAt   DateTime
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+}
+
+enum OtpPurpose {
+  REGISTRATION
+  FORGOT_PASSWORD
+  CHANGE_EMAIL
+  SENSITIVE_ACTION
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ─── CHAT ────────────────────────────────────────────────────
+
+enum ChatRoomType {
+  DIRECT        // One-to-one
+  COMMITTEE     // Auto-created committee room
+  CAMPAIGN      // Campaign-specific room
+  BROADCAST     // One-to-many (postholder to karyakartas)
+}
+
+model ChatRoom {
+  id          String       @id @default(uuid())
+  name        String?
+  type        ChatRoomType
+  committeeId String?
+  committee   Committee?   @relation(fields: [committeeId], references: [id])
+  campaignId  String?
+  campaign    Campaign?    @relation(fields: [campaignId], references: [id])
+  createdById String?
+  isActive    Boolean      @default(true)
+  // For direct chats: sorted user IDs concatenated
+  directKey   String?      @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  members     ChatRoomMember[]
+  messages    Message[]
+  pinned      PinnedMessage[]
+
+  @@index([type])
+  @@index([committeeId])
+}
+
+model ChatRoomMember {
+  id         String   @id @default(uuid())
+  roomId     String
+  room       ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAdmin    Boolean  @default(false)
+  joinedAt   DateTime @default(now())
+  lastReadAt DateTime?
+  isMuted    Boolean  @default(false)
+  leftAt     DateTime?
+
+  @@unique([roomId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  roomId      String
+  room        ChatRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId    String
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id])
+  content     String?     @db.Text
+  messageType MessageType @default(TEXT)
+  mediaUrl    String?
+  mediaSize   Int?
+  replyToId   String?
+  replyTo     Message?    @relation("Replies", fields: [replyToId], references: [id])
+  replies     Message[]   @relation("Replies")
+  isEdited    Boolean     @default(false)
+  isDeleted   Boolean     @default(false)
+  deletedAt   DateTime?
+  sentAt      DateTime    @default(now())
+  editedAt    DateTime?
+
+  reactions   MessageReaction[]
+  pinned      PinnedMessage[]
+
+  @@index([roomId, sentAt])
+  @@index([senderId])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  DOCUMENT
+  AUDIO
+  SYSTEM
+  POLL
+}
+
+model MessageReaction {
+  id        String  @id @default(uuid())
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String  // e.g. "👍", "❤️", "🙌"
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId, emoji])
+}
+
+model PinnedMessage {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id])
+  pinnedBy  String
+  pinner    User     @relation(fields: [pinnedBy], references: [id])
+  pinnedAt  DateTime @default(now())
+
+  @@unique([roomId, messageId])
+}
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────
+
+enum NotificationType {
+  NEW_MESSAGE
+  ROOM_INVITE
+  CAMPAIGN_ASSIGNED
+  TASK_ASSIGNED
+  MENTION
+  PROFILE_VERIFIED
+  EVENT_REMINDER
+  POLL_CREATED
+  SYSTEM
+  REPORT_RESOLVED
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  triggeredBy String?
+  trigger     User?            @relation("TriggeredBy", fields: [triggeredBy], references: [id])
+  type        NotificationType
+  title       String
+  body        String
+  link        String?
+  isRead      Boolean          @default(false)
+  readAt      DateTime?
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// ─── CAMPAIGNS & TASKS ───────────────────────────────────────
+
+model Campaign {
+  id          String         @id @default(uuid())
+  title       String
+  description String?        @db.Text
+  createdById String
+  createdBy   User           @relation(fields: [createdById], references: [id])
+  targetLevel AdminLevel
+  status      CampaignStatus @default(ACTIVE)
+  startDate   DateTime
+  endDate     DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  tasks       Task[]
+  chatRooms   ChatRoom[]
+
+  @@index([status])
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+model Task {
+  id           String     @id @default(uuid())
+  campaignId   String
+  campaign     Campaign   @relation(fields: [campaignId], references: [id])
+  title        String
+  description  String?
+  assignedToId String
+  assignedTo   User       @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  createdById  String
+  createdBy    User       @relation("CreatedTasks", fields: [createdById], references: [id])
+  status       TaskStatus @default(PENDING)
+  dueAt        DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime   @default(now())
+
+  @@index([assignedToId])
+  @@index([campaignId])
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────
+
+model Event {
+  id           String      @id @default(uuid())
+  title        String
+  description  String?     @db.Text
+  venue        String
+  scheduledAt  DateTime
+  attendeeLimit Int?
+  createdById  String
+  createdBy    User        @relation(fields: [createdById], references: [id])
+  targetLevel  AdminLevel
+  qrCode       String?     @unique
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  attendees    EventAttendee[]
+}
+
+model EventAttendee {
+  id        String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String
+  rsvp      Boolean  @default(false)
+  checkedIn Boolean  @default(false)
+  checkedAt DateTime?
+
+  @@unique([eventId, userId])
+}
+
+// ─── POLLS ───────────────────────────────────────────────────
+
+model Poll {
+  id          String     @id @default(uuid())
+  question    String
+  options     Json       // Array of {id, text}
+  createdById String
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  isAnonymous Boolean    @default(false)
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+
+  votes       PollVote[]
+}
+
+model PollVote {
+  id        String   @id @default(uuid())
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  optionId  String
+  votedAt   DateTime @default(now())
+
+  @@unique([pollId, userId])
+}
+
+// ─── REPORTS & MODERATION ────────────────────────────────────
+
+model Report {
+  id          String       @id @default(uuid())
+  reporterId  String
+  reporter    User         @relation("ReportsMade", fields: [reporterId], references: [id])
+  reportedId  String
+  reported    User         @relation("ReportsReceived", fields: [reportedId], references: [id])
+  reason      ReportReason
+  details     String?
+  status      ReportStatus @default(PENDING)
+  resolvedAt  DateTime?
+  createdAt   DateTime     @default(now())
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  MISINFORMATION
+  INAPPROPRIATE_CONTENT
+  IMPERSONATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+// ─── AUDIT LOG ───────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  action      String   // e.g. "LOGIN", "PROFILE_UPDATE", "MESSAGE_DELETE"
+  entity      String?
+  entityId    String?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─── VOLUNTEER TRACKING ──────────────────────────────────────
+
+model VolunteerLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  activity    String
+  hoursLogged Float
+  date        DateTime
+  verifiedBy  String?
+  createdAt   DateTime @default(now())
+}
+
+// ─── REGIONAL FEED POSTS (TWITTER-LIKE) ──────
+
+enum PostType {
+  GENERAL
+  ADVISORY
+  CAMPAIGN
+}
+
+model FeedPost {
+  id          String   @id @default(uuid())
+  content     String   @db.Text
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  type        PostType @default(GENERAL)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([locationId, createdAt])
+  @@index([authorId])
+}
