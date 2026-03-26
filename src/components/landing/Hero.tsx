@@ -69,34 +69,54 @@ function ParticleCanvas() {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center pt-16 overflow-hidden bg-[#0A0A0F]">
       <BackgroundCarousel />
       <ParticleCanvas />
       
-      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 bg-gold/10 border border-gold/20 backdrop-blur-md">
-          <span className="text-[10px] sm:text-xs text-gold font-black uppercase tracking-[0.3em]">JAI HIND — DIGITAL SANGATHAN</span>
+      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto mt-12">
+        {/* Jan Suraaj Style Badge */}
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 bg-[#fbbf24]/10 border border-[#fbbf24]/20 backdrop-blur-md">
+          <div className="w-2 h-2 rounded-full bg-[#fbbf24] animate-pulse" />
+          <span className="text-[9px] sm:text-[10px] text-[#fbbf24] font-black uppercase tracking-[0.3em]">LIVE: MISSION 2027 DIGITAL SANGATHAN</span>
         </motion.div>
 
-        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="font-display font-black text-6xl md:text-9xl leading-[0.9] mb-6 tracking-tighter">
+        {/* Impact Typography */}
+        <motion.h1 initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="font-display font-black text-6xl md:text-9xl leading-[0.85] mb-6 tracking-tighter">
           <span className="block text-white">MANKI</span>
-          <span className="block" style={{ background: 'linear-gradient(135deg, #FFD700, #FF6B00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PARTY</span>
+          <span className="block text-[#fbbf24]">PARTY</span>
         </motion.h1>
 
-        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-text-muted text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-medium uppercase tracking-[0.1em]">
-          Empowering 21-Crore Karyakartas from <span className="text-gold">Ward</span> to <span className="text-saffron">State</span> via the most advanced Digital Hierarchy.
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+           className="text-white/80 text-xs md:text-sm max-w-2xl mx-auto mb-10 leading-relaxed font-bold uppercase tracking-[0.1em]">
+           बिहार से देश तक — <span className="text-[#fbbf24]">DIGITAL SANGATHAN</span> IS EMPOWERING 21-CRORE KARYAKARTAS VIA BHARAT&apos;S MOST ADVANCED HIERARCHY.
         </motion.p>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+        {/* Counter Bar (Jan Suraaj Style) */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+          {[
+            { label: 'KARYAKARTAS', val: '21Cr+' },
+            { label: 'COMMITTEES', val: '1.2M+' },
+            { label: 'DISTRICTS', val: '766' },
+            { label: 'VERIFIED', val: '100%' }
+          ].map((stat, i) => (
+            <div key={i} className="glass p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
+               <div className="text-xl md:text-2xl font-black text-[#fbbf24] tracking-tighter">{stat.val}</div>
+               <div className="text-[8px] font-black text-white/40 uppercase tracking-widest mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Dynamic CTAs */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/auth/register" className="btn-manki text-xs px-10 py-5 rounded-xl uppercase font-black tracking-widest shadow-manki transition-transform active:scale-95">
-             🚀 Join Digital Mission
+          <Link href="/auth/register" className="px-10 py-5 rounded-full bg-[#fbbf24] text-black text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-white transition-all transform hover:scale-105 active:scale-95">
+             🚀 JOIN THE MOVEMENT
           </Link>
-          <Link href="/auth/login" className="btn-ghost text-xs px-10 py-5 rounded-xl uppercase font-black tracking-widest border-white/10 hover:border-gold/30">
-             Karyakarta Login
+          <Link href="/compliance/support" className="px-10 py-5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+             सहयोग करें (CONTRIBUTE)
           </Link>
         </motion.div>
       </div>

@@ -41,16 +41,16 @@ export default function LandingPage() {
         {/* Dynamic Visual Segments */}
         <Hero />
         
-        <div className="relative z-10 space-y-20">
+        <div className="relative z-10 space-y-10">
           {/* Insta-Style Carousel Section */}
           <InstaCarousel />
           
-          <div className="max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-40" />
+          <div className="max-w-7xl mx-auto h-[1px] bg-white/5 opacity-40 shrink-0" />
           
           {/* Geopolitical Hierarchy Visualization */}
           <HierarchyTree />
           
-          <div className="max-w-7xl mx-auto h-px bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-40" />
+          <div className="max-w-7xl mx-auto h-[1px] bg-white/5 opacity-40 shrink-0" />
 
           {/* Mission & Sangathan Building */}
           <SectionAbout />

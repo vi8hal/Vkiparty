@@ -24,9 +24,9 @@ export default function InstaCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   return (
-    <section className="py-12 px-4 max-w-6xl mx-auto overflow-hidden">
+    <section className="py-4 px-4 max-w-6xl mx-auto overflow-hidden">
       {/* Stories Row */}
-      <div className="flex items-center gap-6 overflow-x-auto pb-8 px-2 custom-scrollbar no-scrollbar">
+      <div className="flex items-center gap-6 overflow-x-auto pb-4 px-2 custom-scrollbar no-scrollbar">
         {STORIES.map((s, i) => (
           <motion.div 
             key={i} 

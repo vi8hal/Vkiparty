@@ -11,8 +11,8 @@ const FEATURES = [
 
 export default function SectionAbout() {
   return (
-    <section id="about" className="py-20 px-6 max-w-7xl mx-auto relative">
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <section id="about" className="py-8 px-6 max-w-7xl mx-auto relative">
+      <div className="grid lg:grid-cols-2 gap-8 items-center">
         
         {/* Left: Interactive Visual */}
         <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
