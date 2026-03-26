@@ -13,8 +13,8 @@ const HIERARCHY = [
 
 export default function HierarchyTree() {
   return (
-    <section className="py-24 px-6 relative max-w-6xl mx-auto overflow-hidden">
-      <div className="text-center mb-16">
+    <section className="py-16 px-6 relative max-w-6xl mx-auto overflow-hidden">
+      <div className="text-center mb-12">
         <h2 className="font-display font-black text-4xl md:text-6xl mb-4 tracking-tighter text-white uppercase">WARD से STATE तक</h2>
         <p className="text-text-muted text-sm md:text-base font-bold tracking-[0.1em] uppercase">India's first completely digital political hierarchy</p>
       </div>

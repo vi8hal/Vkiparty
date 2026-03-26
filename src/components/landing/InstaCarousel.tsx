@@ -4,14 +4,14 @@ import Image from 'next/image';
 import { useRef } from 'react';
 
 const STORIES = [
-  { name: 'Maharashtra', icon: '🏛️' },
-  { name: 'Uttar Pradesh', icon: '🌾' },
-  { name: 'Karnataka', icon: '💻' },
-  { name: 'Tamil Nadu', icon: '🌊' },
-  { name: 'Gujarat', icon: '🏢' },
-  { name: 'West Bengal', icon: '🎨' },
-  { name: 'Punjab', icon: '🚜' },
-  { name: 'Rajasthan', icon: '🏰' },
+  { name: 'Ward Node',     icon: '🏘️' },
+  { name: 'Village Unit',  icon: '🌾' },
+  { name: 'Block Level',   icon: '🏢' },
+  { name: 'District',      icon: '🏙️' },
+  { name: 'State Body',    icon: '🗺️' },
+  { name: 'Mission 2027',  icon: '🚀' },
+  { name: 'Sovereign ID',  icon: '🛡️' },
+  { name: 'Vox Populi',    icon: '🗳️' },
 ];
 
 const FEED_IMAGES = [
@@ -24,7 +24,7 @@ export default function InstaCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   return (
-    <section className="py-20 px-4 max-w-6xl mx-auto overflow-hidden">
+    <section className="py-12 px-4 max-w-6xl mx-auto overflow-hidden">
       {/* Stories Row */}
       <div className="flex items-center gap-6 overflow-x-auto pb-8 px-2 custom-scrollbar no-scrollbar">
         {STORIES.map((s, i) => (

@@ -9,7 +9,7 @@ const PILLARS = [
 
 export default function SectionVision() {
   return (
-    <section id="vision" className="py-32 px-6 relative overflow-hidden bg-vanda">
+    <section id="vision" className="py-20 px-6 relative overflow-hidden bg-vanda">
       {/* Background Glow */}
       <div className="absolute inset-0 pointer-events-none opacity-20"
         style={{ background: 'radial-gradient(circle at 70% 30%, #FF6B00 0%, transparent 70%)' }} />

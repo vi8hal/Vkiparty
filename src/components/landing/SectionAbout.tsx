@@ -11,7 +11,7 @@ const FEATURES = [
 
 export default function SectionAbout() {
   return (
-    <section id="about" className="py-32 px-6 max-w-7xl mx-auto relative">
+    <section id="about" className="py-20 px-6 max-w-7xl mx-auto relative">
       <div className="grid lg:grid-cols-2 gap-16 items-center">
         
         {/* Left: Interactive Visual */}
