@@ -4,7 +4,6 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 // ─── CHILD COMPONENTS ───────────────────────────────────────────
 import Navbar from '@/components/landing/Navbar';
 import NoticeTicker from '@/components/landing/NoticeTicker';
-import QuickAccessBar from '@/components/landing/QuickAccessBar';
 import Hero from '@/components/landing/Hero';
 import InstaCarousel from '@/components/landing/InstaCarousel';
 import HierarchyTree from '@/components/landing/HierarchyTree';
@@ -34,7 +33,6 @@ export default function LandingPage() {
       {/* ── NAVIGATION & ALERTS ───────────────────────────────── */}
       <Navbar />
       <NoticeTicker />
-      <QuickAccessBar />
 
       {/* ── MAIN CONTENT LAYOUT ───────────────────────────────── */}
       <main className="relative pt-24 md:pt-36">

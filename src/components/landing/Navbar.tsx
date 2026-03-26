@@ -30,60 +30,60 @@ export default function Navbar() {
   return (
     <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl"
          onMouseLeave={() => setActiveDrawer(null)}>
-      <div className="relative rounded-full border border-white/20 px-4 md:px-8 h-12 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-2xl bg-black/40">
+      <div className="relative rounded-full border border-white/20 px-6 md:px-10 h-16 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-3xl bg-black/60">
         
         {/* Metallic Gloss Reflection */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
 
         {/* Left: Logo & Lang */}
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-manki transition-transform group-hover:scale-110 bg-[#fbbf24]">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-lg shadow-manki transition-transform group-hover:scale-110 bg-[#fbbf24]">
               🇮🇳
             </div>
-            <span className="font-display font-black text-xs md:text-sm tracking-tighter text-white">
+            <span className="font-display font-black text-sm md:text-lg tracking-tighter text-white uppercase">
               MANKI<span className="text-[#fbbf24]">PARTY</span>
             </span>
           </Link>
           
           <button onClick={() => setLang(lang === 'EN' ? 'HI' : 'EN')}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full border border-white/10 text-[9px] font-black text-white hover:bg-[#fbbf24] hover:text-black transition-all">
+            className="hidden md:flex items-center justify-center w-10 h-10 rounded-full border border-white/10 text-[10px] font-black text-white hover:bg-[#fbbf24] hover:text-black transition-all">
             {lang}
           </button>
         </div>
 
         {/* Center: Desktop Links (Jan Suraaj inspired spacing) */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
-            <div key={link.name_en} className="relative py-4"
+            <div key={link.name_en} className="relative py-6"
                  onMouseEnter={() => link.isDrawer && setActiveDrawer(link.name_en)}>
               <Link href={link.href} 
-                className="text-[9px] uppercase tracking-[0.2em] font-black text-white/50 hover:text-[#fbbf24] transition-colors flex items-center gap-1">
+                className="text-[11px] uppercase tracking-[0.25em] font-black text-white/60 hover:text-[#fbbf24] transition-colors flex items-center gap-1.5 translate-y-px">
                 {t(link.name_en, link.name_hi)}
-                {link.isDrawer && <span className="text-[8px] opacity-40">▼</span>}
+                {link.isDrawer && <span className="text-[10px] opacity-40">▼</span>}
               </Link>
             </div>
           ))}
         </div>
 
         {/* Right: CTAs */}
-        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        <div className="flex items-center gap-3 md:gap-5 shrink-0">
           <Link href="/compliance/support" 
-            className="hidden sm:block text-[9px] px-4 py-2 rounded-full uppercase font-black tracking-widest bg-[#fbbf24] text-black hover:bg-white transition-all">
+            className="hidden sm:block text-[10px] px-6 py-2.5 rounded-full uppercase font-black tracking-widest bg-[#fbbf24] text-black hover:bg-white transition-all shadow-xl">
             {t('CONTRIBUTE', 'सहयोग करें')}
           </Link>
           
-          <Link href="/auth/login" className="text-[9px] font-black text-white/50 hover:text-white uppercase tracking-widest hidden sm:block">
+          <Link href="/auth/login" className="text-[10px] font-black text-white/50 hover:text-white uppercase tracking-widest hidden sm:block">
             {t('LOGIN', 'लॉगिन')}
           </Link>
 
           <Link href="/auth/register" 
-            className="text-[9px] px-5 py-2 rounded-full uppercase font-black tracking-widest border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24] hover:text-black transition-all">
+            className="text-[10px] px-6 py-2.5 rounded-full uppercase font-black tracking-widest border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24] hover:text-black transition-all">
             {t('JOIN', 'जुड़ें')}
           </Link>
           
           {/* Mobile Toggle */}
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-1.5 text-white/60 hover:text-white">
+          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-white/60 hover:text-white">
              {isOpen ? '✕' : '☰'}
           </button>
         </div>
@@ -96,9 +96,9 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            className="absolute top-14 left-0 right-0 glass rounded-3xl border border-white/10 p-6 shadow-2xl bg-black/80 backdrop-blur-3xl overflow-hidden"
+            className="absolute top-18 left-0 right-0 glass rounded-[2.5rem] border border-white/10 p-8 shadow-2xl bg-black/80 backdrop-blur-3xl overflow-hidden"
           >
-             <div className="grid grid-cols-4 lg:grid-cols-5 gap-3">
+             <div className="grid grid-cols-4 lg:grid-cols-5 gap-4">
                 {NAV_LINKS.find(n => n.name_en === activeDrawer)?.children?.map(child => (
                    <Link key={child.name_en} href={child.href}
                      className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/[0.04] border border-white/5 hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/10 transition-all text-center">
