@@ -56,7 +56,7 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-8">
           {NAV_LINKS.map((link) => (
             <div key={link.name_en} className="relative py-6"
-                 onMouseEnter={() => link.isDrawer && setActiveDrawer(link.name_en)}>
+                 onMouseEnter={() => setActiveDrawer(link.isDrawer ? link.name_en : null)}>
               <Link href={link.href} 
                 className="text-[11px] uppercase tracking-[0.25em] font-black text-white/60 hover:text-[#fbbf24] transition-colors flex items-center gap-1.5 translate-y-px">
                 {t(link.name_en, link.name_hi)}
