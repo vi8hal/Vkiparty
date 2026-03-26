@@ -1,14 +1,13 @@
-/* ============================================================
-   src/app/globals.css — Manki Party Global Styles
-   Theme: Vanda Black → Yellow/Orange gradient
-   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Google Fonts ─────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+/* ============================================================
+   src/app/globals.css — Manki Party Global Styles
+   Theme: Vanda Black → Yellow/Orange gradient
+   ============================================================ */
 
 /* ── CSS Variables ────────────────────────────────────────── */
 :root {
@@ -118,6 +117,7 @@ body {
   background-size: 200% 200%;
   animation: stripeScroll 3s linear infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;

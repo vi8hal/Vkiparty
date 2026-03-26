@@ -8,9 +8,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
-  experimental: {
-    serverComponentsExternalPackages: ['argon2', 'nodemailer'],
-  },
+  serverExternalPackages: ['argon2', 'nodemailer'],
 };
 
 module.exports = nextConfig;

@@ -315,46 +315,43 @@ export default function LandingPage() {
           </motion.div>
 
           {/* Hierarchy tree */}
-          <div className="flex flex-col items-center gap-0">
+          <div className="flex flex-col items-center gap-2">
             {HIERARCHY.map((h, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="flex items-center gap-4 w-full max-w-md"
-                style={{ paddingLeft: `${i * 24}px` }}
+                transition={{ delay: i * 0.05 }}
+                className="w-full max-w-xl"
+                style={{ 
+                  paddingLeft: typeof window !== 'undefined' && window.innerWidth > 640 ? `${i * 24}px` : '0px' 
+                }}
               >
-                {/* Connector line */}
-                {i > 0 && (
-                  <div className="absolute left-0 w-px h-8"
-                    style={{ background: `linear-gradient(${HIERARCHY[i-1].color}, ${h.color})` }} />
-                )}
                 <div
-                  className="card-3d flex items-center gap-4 px-5 py-4 rounded-2xl w-full mb-2 cursor-pointer"
+                  className="card-3d flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3 md:py-4 rounded-2xl w-full mb-1 cursor-pointer transition-transform hover:scale-[1.02]"
                   style={{
                     background: `linear-gradient(135deg, ${h.color}15, ${h.color}05)`,
                     border: `1px solid ${h.color}30`,
                   }}
                 >
-                  <div className="text-2xl">{h.icon}</div>
-                  <div className="flex-1">
-                    <div className="font-display font-bold text-base" style={{ color: h.color }}>
+                  <div className="text-xl md:text-2xl">{h.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-display font-bold text-sm md:text-base truncate" style={{ color: h.color }}>
                       {h.level}
                     </div>
-                    <div className="text-text-muted text-xs">{h.desc}</div>
+                    <div className="text-text-muted text-[10px] md:text-xs truncate">{h.desc}</div>
                   </div>
                   {i === 0 && (
-                    <span className="hierarchy-badge text-vanda"
+                    <span className="text-[8px] md:text-[10px] px-2 py-0.5 rounded-full font-bold text-vanda shrink-0"
                       style={{ background: h.color }}>
-                      GRASSROOTS
+                      CORE
                     </span>
                   )}
                   {i === HIERARCHY.length - 1 && (
-                    <span className="hierarchy-badge text-vanda"
+                    <span className="text-[8px] md:text-[10px] px-2 py-0.5 rounded-full font-bold text-vanda shrink-0"
                       style={{ background: h.color }}>
-                      TOP LEVEL
+                      APEX
                     </span>
                   )}
                 </div>

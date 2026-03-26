@@ -16,9 +16,11 @@ import { rateLimit } from '@/lib/redis';
  * 3. Rate-limited: To prevent query spam on location endpoints
  * ============================================================
  */
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const locationId = searchParams.get('locationId');
     const cursor = searchParams.get('cursor') || undefined;
     const limitParams = searchParams.get('limit');

@@ -15,12 +15,12 @@ const PAGE_SIZE = 30;
 // GET /api/chat/rooms/:roomId/messages?cursor=<messageId>
 export const GET = routeHandler(async (
   req: NextRequest,
-  { params }: { params: { roomId: string } }
+  { params }: { params: Promise<{ roomId: string }> }
 ) => {
   const session = await getSession();
   if (!session) return errors.unauthorized();
 
-  const { roomId } = params;
+  const { roomId } = await params;
   const cursor = req.nextUrl.searchParams.get('cursor') ?? undefined;
 
   // Verify membership
@@ -77,12 +77,12 @@ const sendSchema = z.object({
 
 export const POST = routeHandler(async (
   req: NextRequest,
-  { params }: { params: { roomId: string } }
+  { params }: { params: Promise<{ roomId: string }> }
 ) => {
   const session = await getSession();
   if (!session) return errors.unauthorized();
 
-  const { roomId } = params;
+  const { roomId } = await params;
 
   const member = await prisma.chatRoomMember.findFirst({
     where: { roomId, userId: session.userId, leftAt: null },
@@ -116,6 +116,8 @@ export const POST = routeHandler(async (
   return ok(message, undefined, 201);
 });
 
+import { queueBulkNotifications } from '@/lib/notifications';
+
 async function notifyRoomMembers(
   roomId: string, senderId: string, senderName: string, preview: string
 ) {
@@ -126,15 +128,13 @@ async function notifyRoomMembers(
 
   if (!members.length) return;
 
-  await prisma.notification.createMany({
-    data: members.map(m => ({
-      userId:      m.userId,
-      triggeredBy: senderId,
-      type:        'NEW_MESSAGE' as const,
-      title:       `New message from ${senderName}`,
-      body:        preview.length > 80 ? preview.slice(0, 77) + '…' : preview,
-      link:        `/chat/${roomId}`,
-    })),
-    skipDuplicates: true,
-  });
+  // Optimized for 21-crore user scale: Queue to Redis instead of sync INSERT
+  await queueBulkNotifications(members.map(m => ({
+    userId:      m.userId,
+    triggeredBy: senderId,
+    type:        'NEW_MESSAGE',
+    title:       `New message from ${senderName}`,
+    body:        preview.length > 80 ? preview.slice(0, 77) + '…' : preview,
+    link:        `/chat/${roomId}`,
+  })));
 }

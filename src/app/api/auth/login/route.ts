@@ -57,7 +57,7 @@ export const POST = routeHandler(async (req: NextRequest) => {
   const dbSession = await createSession(sessionData, ip, req.headers.get('user-agent') ?? undefined);
   sessionData.sessionId = dbSession.id;
 
-  const session = await getIronSession<SessionData>(cookies(), SESSION_OPTIONS);
+  const session = await getIronSession<SessionData>(await cookies(), SESSION_OPTIONS);
   Object.assign(session, sessionData);
   await session.save();
 

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Destroy cookie
-  const ironSession = await getIronSession<SessionData>(cookies(), SESSION_OPTIONS);
+  const ironSession = await getIronSession<SessionData>(await cookies(), SESSION_OPTIONS);
   ironSession.destroy();
 
   return ok({}, 'Logged out successfully');

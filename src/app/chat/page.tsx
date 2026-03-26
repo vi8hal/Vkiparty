@@ -143,9 +143,10 @@ export default function ChatPage() {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [socket, setSocket]         = useState<Socket | null>(null);
   const [loading, setLoading]       = useState(false);
-  const [currentUserId]             = useState('mock-user-id'); // From session
+  const [showRoomList, setShowRoomList] = useState(true); // Toggle for mobile
+  const [currentUserId]             = useState('mock-user-id'); // To be replaced by actual session
   const messagesEndRef              = useRef<HTMLDivElement>(null);
-  const typingTimer                 = useRef<ReturnType<typeof setTimeout>>();
+  const typingTimer                 = useRef<any>(null);
 
   // Fetch rooms
   useEffect(() => {
@@ -153,6 +154,16 @@ export default function ChatPage() {
       .then(r => r.json())
       .then(d => { if (d.success) setRooms(d.data); })
       .catch(() => {});
+  }, []);
+
+  // Window resize handler for mobile/desktop toggle
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setShowRoomList(true);
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Socket connection
@@ -196,6 +207,8 @@ export default function ChatPage() {
     setActiveRoom(room);
     setMessages([]);
     setLoading(true);
+    if (window.innerWidth < 768) setShowRoomList(false); // Auto-hide list on mobile when room selected
+    
     try {
       const res  = await fetch(`/api/chat/rooms/${room.id}/messages`);
       const data = await res.json();
@@ -240,98 +253,96 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-vanda flex" style={{ paddingLeft: '256px' }}>
-      <div className="grain-overlay" />
+    <div className="min-h-screen bg-vanda flex overflow-hidden">
+      <div className="grain-overlay pointer-events-none opacity-20" />
 
-      {/* Room list */}
-      <div className="w-80 flex flex-col border-r border-[rgba(255,107,0,0.1)]"
-        style={{ background: '#0D0D1A' }}>
+      {/* Room list (Sidebar) */}
+      <motion.div 
+        initial={false}
+        animate={{ width: showRoomList ? 320 : 0, opacity: showRoomList ? 1 : 0 }}
+        className={`fixed md:relative inset-y-0 left-0 z-30 flex flex-col border-r border-white/5 bg-[#0D0D1A] overflow-hidden`}
+      >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-[rgba(255,107,0,0.1)]">
+        <div className="px-5 py-4 border-b border-white/5 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-display font-bold text-lg">
-              <span className="seo-strip text-white">Chats</span>
-            </h2>
-            <button className="btn-manki text-xs py-1.5 px-3">+ New</button>
+            <h2 className="font-display font-bold text-lg text-white">Chats</h2>
+            <button className="btn-manki text-[10px] py-1.5 px-3 uppercase tracking-wider font-bold">+ New</button>
           </div>
-          <input className="input-manki text-sm py-2" placeholder="🔍 Search conversations…" />
+          <div className="relative">
+            <input className="input-manki text-sm py-2 pl-9" placeholder="Search rooms..." />
+            <span className="absolute left-3 top-2.5 text-text-muted">🔍</span>
+          </div>
         </div>
 
         {/* Room list */}
-        <div className="flex-1 overflow-y-auto">
-          {rooms.length === 0 && (
-            <div className="p-6 text-center text-text-muted text-sm">
-              <div className="text-4xl mb-3">💬</div>
-              No conversations yet
-            </div>
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {rooms.length === 0 && !loading && (
+            <div className="p-12 text-center text-text-muted text-sm italic">No conversations</div>
           )}
           {rooms.map(room => (
             <button key={room.id}
-              className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-[rgba(255,107,0,0.06)]
-                transition-all text-left border-b border-[rgba(255,255,255,0.04)]
-                ${activeRoom?.id === room.id ? 'bg-[rgba(255,107,0,0.1)]' : ''}`}
+              className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-white/5 transition-all text-left border-b border-white/[0.02]
+                ${activeRoom?.id === room.id ? 'bg-saffron/10 border-l-2 border-l-saffron' : ''}`}
               onClick={() => loadRoom(room)}>
-              <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center
-                font-bold text-sm text-vanda"
+              <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm text-vanda"
                 style={{ background: 'linear-gradient(135deg,#FFD700,#FF6B00)' }}>
                 {room.name?.charAt(0) ?? '?'}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm text-white truncate">
-                    {room.name ?? 'Direct Chat'}
-                  </span>
-                  <span className="text-[10px] text-text-muted flex-shrink-0 ml-2">
-                    {room.lastMessage
-                      ? new Date(room.lastMessage.sentAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-                      : ''}
+                  <span className="font-semibold text-sm text-white truncate">{room.name ?? 'Chat'}</span>
+                  <span className="text-[10px] text-text-muted shrink-0">
+                    {room.lastMessage ? new Date(room.lastMessage.sentAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}
                   </span>
                 </div>
-                <div className="text-xs text-text-muted truncate mt-0.5">
-                  {room.lastMessage?.content ?? 'No messages yet'}
-                </div>
+                <div className="text-xs text-text-dim truncate mt-0.5">{room.lastMessage?.content ?? 'No messages yet'}</div>
               </div>
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Chat area */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Chat Area */}
+      <div className={`flex-1 flex flex-col relative transition-all duration-300 ${!showRoomList ? 'w-full' : ''}`}>
+        
+        {/* Toggle button for mobile at the corner */}
+        {!showRoomList && (
+          <button 
+            onClick={() => setShowRoomList(true)}
+            className="md:hidden absolute left-4 top-5 z-40 bg-saffron/20 p-2 rounded-lg text-saffron border border-saffron/30"
+          >
+            ☰
+          </button>
+        )}
+
         {activeRoom ? (
           <>
             {/* Room header */}
-            <div className="px-6 py-4 border-b border-[rgba(255,107,0,0.1)] flex items-center gap-4 glass sticky top-0 z-10">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-vanda"
+            <div className={`px-6 md:px-8 py-4 border-b border-white/5 flex items-center gap-4 glass sticky top-0 z-20 ${!showRoomList ? 'pl-16 md:pl-8' : ''}`}>
+              <div className="hidden sm:flex w-9 h-9 rounded-full items-center justify-center font-bold text-sm text-vanda"
                 style={{ background: 'linear-gradient(135deg,#FFD700,#FF6B00)' }}>
-                {activeRoom.name?.charAt(0) ?? 'D'}
+                {activeRoom.name?.charAt(0)}
               </div>
-              <div>
-                <div className="font-display font-bold text-base text-white">
-                  {activeRoom.name ?? 'Direct Chat'}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="online-dot" style={{ width: 6, height: 6 }} />
-                  <span className="text-[11px] text-success">Active now</span>
+              <div className="min-w-0">
+                <div className="font-display font-bold text-sm md:text-base text-white truncate">{activeRoom.name}</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse shadow-[0_0_8px_#22C55E]" />
+                  <span className="text-[10px] text-success font-semibold tracking-wider uppercase">Online</span>
                 </div>
               </div>
-              <div className="ml-auto flex items-center gap-2">
-                <button className="btn-ghost text-xs py-1.5 px-3">📌 Pinned</button>
-                <button className="btn-ghost text-xs py-1.5 px-3">🔍 Search</button>
+              <div className="ml-auto hidden sm:flex items-center gap-2">
+                <button className="btn-ghost text-[10px] py-1.5 px-3 uppercase tracking-widest font-bold">Files</button>
               </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-6"
-              style={{ background: 'radial-gradient(ellipse 80% 40% at 50% 100%, rgba(255,107,0,0.04) 0%, transparent 70%)' }}>
+            {/* Messages container */}
+            <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-2 bg-[#0A0A0F]/50 shadow-inner">
               {loading && (
-                <div className="flex justify-center py-8">
-                  <div className="flex gap-2">
-                    {[0,1,2].map(i => (
-                      <div key={i} className="w-2 h-2 rounded-full bg-saffron animate-bounce"
-                        style={{ animationDelay: `${i*0.15}s` }} />
-                    ))}
-                  </div>
+                <div className="flex justify-center py-12">
+                   <div className="inline-flex gap-2 p-3 rounded-2xl glass text-xs text-gold border-gold/20">
+                      <div className="w-4 h-4 rounded-full border-2 border-gold border-t-transparent animate-spin" />
+                      Loading encrypted history...
+                   </div>
                 </div>
               )}
 
@@ -344,68 +355,52 @@ export default function ChatPage() {
                 />
               ))}
 
-              {/* Typing indicator */}
+              {/* Typing area */}
               {typingUsers.length > 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className="flex items-center gap-3 mb-4">
-                  <div className="flex gap-1.5 px-4 py-3 rounded-2xl msg-bubble-recv">
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
-                    <div className="typing-dot" />
+                <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
+                  className="flex items-end gap-3 mb-4">
+                  <div className="px-4 py-2 rounded-2xl bg-white/5 border border-white/5 flex gap-1 items-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-saffron/40 animate-bounce" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-saffron/60 animate-bounce delay-100" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-saffron/80 animate-bounce delay-200" />
                   </div>
-                  <span className="text-xs text-text-muted">{typingUsers.join(', ')} typing…</span>
+                  <span className="text-[10px] text-text-muted italic">{typingUsers[0]} is typing...</span>
                 </motion.div>
               )}
-
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="px-6 py-4 border-t border-[rgba(255,107,0,0.1)] glass">
-              <div className="flex items-end gap-3">
-                <div className="flex-1 relative">
+            {/* Input Footer */}
+            <div className="px-4 md:px-6 py-4 border-t border-white/5 bg-[#0D0D1A]">
+              <div className="flex items-end gap-2 md:gap-3 max-w-5xl mx-auto">
+                <div className="flex-1 relative group">
                   <textarea
-                    className="input-manki resize-none pr-12 min-h-[44px] max-h-32 py-3"
+                    className="input-manki resize-none pr-10 min-h-[48px] max-h-32 py-3.5 text-sm leading-relaxed"
                     rows={1}
-                    placeholder="Type your message… (Enter to send)"
+                    placeholder="Message committee..."
                     value={input}
                     onChange={e => handleInputChange(e.target.value)}
                     onKeyDown={e => {
                       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
                     }}
-                    style={{ lineHeight: 1.5 }}
                   />
-                  {/* Emoji button */}
-                  <button className="absolute right-3 top-3 text-text-muted hover:text-gold text-lg">
-                    😊
-                  </button>
+                  <button className="absolute right-3 top-3.5 text-lg opacity-50 hover:opacity-100 transition-opacity">😊</button>
                 </div>
-                {/* Attachment */}
-                <button className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl p-0 text-lg">
-                  📎
-                </button>
-                {/* Send */}
+                <button className="btn-ghost shrink-0 w-12 h-12 flex items-center justify-center p-0 rounded-xl text-lg hover:border-gold/40">📎</button>
                 <button
-                  className="btn-manki w-11 h-11 flex items-center justify-center rounded-xl p-0"
+                  className="btn-manki shrink-0 w-12 h-12 flex items-center justify-center p-0 rounded-xl shadow-manki transition-transform active:rotate-12"
                   onClick={send} disabled={!input.trim()}>
                   ➤
                 </button>
               </div>
+              <div className="text-[9px] text-center text-text-muted mt-2 tracking-widest uppercase opacity-50">Jai Hind — End-to-End Encrypted</div>
             </div>
           </>
         ) : (
-          /* Empty state */
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-            <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="text-7xl mb-6">💬</motion.div>
-            <h2 className="font-display font-bold text-2xl text-white mb-3">
-              <span className="seo-strip">Select a conversation</span>
-            </h2>
-            <p className="text-text-muted text-base max-w-xs leading-relaxed">
-              Choose from your committee chats, campaign rooms, or start a direct conversation with a party member.
-            </p>
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#0A0A0F]">
+            <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 4 }} className="text-6xl mb-6">🇮🇳</motion.div>
+            <h2 className="font-display font-bold text-2xl text-white mb-2">Bharat Sangathan</h2>
+            <p className="text-text-muted text-sm max-w-xs leading-relaxed">Select a regional committee or member to start coordinating for the grassroots movement.</p>
           </div>
         )}
       </div>

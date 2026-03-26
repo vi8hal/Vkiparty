@@ -14,7 +14,7 @@ const PROTECTED = ['/dashboard', '/chat', '/profile', '/search', '/notifications
 // Routes only for guests (redirect to dashboard if already authed)
 const GUEST_ONLY = ['/auth/login', '/auth/register', '/auth/forgot-password'];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const path     = req.nextUrl.pathname;
   const res      = NextResponse.next();
 
