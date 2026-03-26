@@ -120,12 +120,19 @@ export function Footer() {
           </div>
           
           {/* Newsletter / CTA */}
-          <div className="w-full max-w-sm">
-             <div className="relative group">
-                <input type="email" placeholder={t('JOIN SANGATHAN CONNECT (EMAIL)', 'संगठन कनेक्ट से जुड़ें (ईमेल)')} 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-[10px] font-black text-white uppercase tracking-widest focus:outline-none focus:border-[#fbbf24] transition-all" />
-                <button className="absolute right-2 top-2 bottom-2 bg-[#fbbf24] text-black px-4 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-white transition-colors">
-                   {t('SUBMIT', 'जमा करें')}
+          <div className="w-full max-w-2xl">
+             <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative group flex-1">
+                   <input type="email" placeholder={t('EMAIL ADDRESS', 'ईमेल पता')} 
+                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-[10px] font-black text-white uppercase tracking-widest focus:outline-none focus:border-[#fbbf24] transition-all" />
+                </div>
+                <div className="relative group flex-1">
+                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#fbbf24] opacity-40">📱</div>
+                   <input type="tel" placeholder={t('MOBILE (GLOBAL)', 'मोबाइल (ग्लोबल)')} 
+                     className="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-5 py-4 text-[10px] font-black text-white uppercase tracking-widest focus:outline-none focus:border-[#fbbf24] transition-all" />
+                </div>
+                <button className="bg-[#fbbf24] text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-colors shadow-2xl shrink-0">
+                   {t('JOIN CONNECT', 'कनेक्ट से जुड़ें')}
                 </button>
              </div>
           </div>
