@@ -34,9 +34,9 @@ export default function Navbar() {
   const [activeDrawer, setActiveDrawer] = useState<string | null>(null);
 
   return (
-    <nav className="fixed top-12 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl"
+    <nav className="fixed top-12 left-1/2 -translate-x-1/2 z-[60] w-[98%] max-w-[1440px]"
          onMouseLeave={() => setActiveDrawer(null)}>
-      <div className="relative rounded-full border border-white/20 px-6 md:px-10 h-16 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-3xl bg-black/60">
+      <div className="relative rounded-full border border-white/20 px-8 md:px-16 h-16 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-3xl bg-black/60">
         
         {/* Metallic Gloss Reflection */}
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
@@ -59,7 +59,7 @@ export default function Navbar() {
         </div>
 
         {/* Center: Desktop Links (Jan Suraaj inspired spacing) */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-12">
           {NAV_LINKS.map((link) => (
             <div key={link.name_en} className="relative py-6"
                  onMouseEnter={() => setActiveDrawer(link.isDrawer ? link.name_en : null)}>
