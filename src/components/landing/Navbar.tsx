@@ -18,6 +18,12 @@ const NAV_LINKS = [
     { name_en: 'Sovereign ID',  name_hi: 'डिजिटल पहचान',   icon: '🛡️', href: '/compliance/privacy' },
     { name_en: 'Vox Populi',    name_hi: 'लोकमत',         icon: '🗳️', href: '/sangathan/voting' },
   ]},
+  { name_en: 'Gallery', name_hi: 'गैलरी', href: '/gallery', isDrawer: true, children: [
+    { name_en: 'Video Hub',     name_hi: 'वीडियो हब',     icon: '🎬', href: '/gallery/videos' },
+    { name_en: 'Photo Bank',    name_hi: 'फोटो बैंक',    icon: '📸', href: '/gallery/photos' },
+    { name_en: 'Press Media',   name_hi: 'प्रेस मीडिया',  icon: '📰', href: '/gallery/press' },
+    { name_en: 'SEO Videos',    name_hi: 'SEO वीडियो',    icon: '📊', href: '/gallery/seo-videos' },
+  ]},
   { name_en: 'Core Members', name_hi: 'प्रमुख सदस्य',   href: '#core-members' },
   { name_en: 'Vision',      name_hi: 'संकल्प',         href: '#vision' },
 ];
