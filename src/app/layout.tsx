@@ -52,26 +52,15 @@ export const viewport: Viewport = {
   maximumScale:         1,
 };
 
+import { Providers } from '@/components/Providers';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${baloo.variable} ${outfit.variable}`}>
       <body className="bg-vanda font-body antialiased selection:bg-saffron/30 selection:text-gold">
-        {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              background:  '#1A1A28',
-              color:       '#F5F5F0',
-              border:      '1px solid rgba(255,107,0,0.3)',
-              borderRadius:'12px',
-              fontFamily:  'var(--font-outfit)',
-              fontSize:    '14px',
-            },
-            success: { iconTheme: { primary: '#FFD700', secondary: '#0A0A0F' } },
-            error:   { iconTheme: { primary: '#EF4444', secondary: '#0A0A0F' } },
-          }}
-        />
+        <Providers>
+           {children}
+        </Providers>
       </body>
     </html>
   );

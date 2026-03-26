@@ -25,25 +25,6 @@ export default function InstaCarousel() {
   
   return (
     <section className="py-4 px-4 max-w-6xl mx-auto overflow-hidden">
-      {/* Stories Row */}
-      <div className="flex items-center gap-6 overflow-x-auto pb-4 px-2 custom-scrollbar no-scrollbar">
-        {STORIES.map((s, i) => (
-          <motion.div 
-            key={i} 
-            whileHover={{ scale: 1.1 }}
-            className="flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-          >
-            <div className="w-16 h-16 rounded-full p-0.5" 
-              style={{ background: 'linear-gradient(45deg, #FF6B00, #FFD700)' }}>
-              <div className="w-full h-full rounded-full bg-vanda border-2 border-vanda flex items-center justify-center text-2xl">
-                {s.icon}
-              </div>
-            </div>
-            <span className="text-[10px] font-bold text-text-muted uppercase tracking-tighter">{s.name}</span>
-          </motion.div>
-        ))}
-      </div>
-
       {/* Main Feed Carousel (Insta-Style Stack) */}
       <div className="relative group">
         <h3 className="font-display font-bold text-lg mb-4 ml-2 flex items-center gap-2">

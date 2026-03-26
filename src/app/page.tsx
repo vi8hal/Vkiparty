@@ -11,6 +11,7 @@ import HierarchyTree from '@/components/landing/HierarchyTree';
 import SectionAbout from '@/components/landing/SectionAbout';
 import SectionVision from '@/components/landing/SectionVision';
 import { SectionFAQ, Footer } from '@/components/landing/FooterArea';
+import CoreMembers from '@/components/landing/CoreMembers';
 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll();
@@ -45,6 +46,11 @@ export default function LandingPage() {
           {/* Insta-Style Carousel Section */}
           <InstaCarousel />
           
+          <div className="max-w-7xl mx-auto h-[1px] bg-white/5 opacity-40 shrink-0" />
+          
+          {/* Core Institutional Profiles */}
+          <CoreMembers />
+
           <div className="max-w-7xl mx-auto h-[1px] bg-white/5 opacity-40 shrink-0" />
           
           {/* Geopolitical Hierarchy Visualization */}

@@ -1,15 +1,18 @@
 'use client';
+import { useLang } from '@/context/LangContext';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 const FEATURES = [
-  { icon: '🗺️', title: 'Territory Bound', desc: 'Securely restricted to your designated region and committee level.' },
-  { icon: '💬', title: 'Dynamic Chats',     desc: 'Automated communication clusters for every organizational node.' },
-  { icon: '📊', title: 'Mission Data',    desc: 'Real-time campaign analytics from Booth to State.' },
-  { icon: '🔒', title: 'Sovereign ID',    desc: 'Proprietary biometric and session-based authentication for total security.' },
+  { icon: '🗺️', title_en: 'Territory Bound', title_hi: 'क्षेत्रीय सीमाबद्ध', desc_en: 'Securely restricted to your level.', desc_hi: 'आपके स्तर तक सुरक्षित सीमित।' },
+  { icon: '💬', title_en: 'Dynamic Chats',     title_hi: 'डायनेमिक चैट',     desc_en: 'Automated cluster comms.', desc_hi: 'स्वचालित क्लस्टर संचार।' },
+  { icon: '📊', title_en: 'Mission Data',    title_hi: 'मिशन डेटा',    desc_en: 'Real-time campaign analytics.', desc_hi: 'रियल-टाइम अभियान विश्लेषण।' },
+  { icon: '🔒', title_en: 'Sovereign ID',    desc_en: 'Biometric security.', title_hi: 'डिजिटल पहचान', desc_hi: 'बायोमेट्रिक सुरक्षा।' },
 ];
 
 export default function SectionAbout() {
+  const { t } = useLang();
+
   return (
     <section id="about" className="py-8 px-6 max-w-7xl mx-auto relative">
       <div className="grid lg:grid-cols-2 gap-8 items-center">
@@ -22,18 +25,23 @@ export default function SectionAbout() {
              alt="Sangathan Building" fill className="object-cover transition-transform group-hover:scale-110" />
            <div className="absolute inset-0 bg-gradient-to-t from-vanda via-transparent to-transparent opacity-60" />
            <div className="absolute bottom-8 left-8 right-8">
-              <div className="text-[10px] text-saffron font-black uppercase mb-2 tracking-[0.2em]">MISSION: SANGATHAN BUILDING</div>
-              <h3 className="text-white font-display font-black text-2xl leading-tight">Digital empowerment for the grassroots citizen.</h3>
+              <div className="text-[10px] text-saffron font-black uppercase mb-2 tracking-[0.2em]">
+                 {t('MISSION: SANGATHAN BUILDING', 'मिशन: संगठन निर्माण')}
+              </div>
+              <h3 className="text-white font-display font-black text-2xl leading-tight">
+                 {t('Digital empowerment for the grassroots citizen.', 'जमीनी स्तर के नागरिकों के लिए डिजिटल सशक्तिकरण।')}
+              </h3>
            </div>
         </motion.div>
 
         {/* Right: Content */}
         <div>
-           <h2 className="font-display font-black text-4xl md:text-6xl mb-8 tracking-tighter text-white uppercase">ONE Sangathan.<br/><span className="text-gold">ONE Bharat.</span></h2>
+           <h2 className="font-display font-black text-4xl md:text-6xl mb-8 tracking-tighter text-white uppercase">
+              {t('ONE Sangathan.', 'एक संगठन।')}<br/><span className="text-gold">{t('ONE Bharat.', 'एक भारत।')}</span>
+           </h2>
            <p className="text-text-muted text-base md:text-lg mb-10 leading-relaxed font-medium uppercase tracking-[0.05em]">
-             MANKI PARTY is the world's most advanced digital sangathan engine. 
-             We connect every ward and every Tola into a single, unified digital pulse. 
-             Coordinate massive missions with surgical precision from any corner of India.
+              {t('MANKI PARTY is the world\'s most advanced digital sangathan engine. We connect every ward and every Tola into a single, unified digital pulse.', 
+                 'मानकी पार्टी दुनिया का सबसे उन्नत डिजिटल संगठन इंजन है। हम हर वार्ड और हर टोले को एक एकल, एकीकृत डिजिटल पल्स से जोड़ते हैं।')}
            </p>
 
            <div className="grid sm:grid-cols-2 gap-8">
@@ -43,8 +51,12 @@ export default function SectionAbout() {
                       {f.icon}
                    </div>
                    <div>
-                      <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">{f.title}</h4>
-                      <p className="text-text-muted text-[11px] leading-relaxed font-bold uppercase opacity-50">{f.desc}</p>
+                      <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-1">
+                         {t(f.title_en, f.title_hi)}
+                      </h4>
+                      <p className="text-text-muted text-[11px] leading-relaxed font-bold uppercase opacity-50">
+                         {t(f.desc_en, f.desc_hi)}
+                      </p>
                    </div>
                 </motion.div>
               ))}

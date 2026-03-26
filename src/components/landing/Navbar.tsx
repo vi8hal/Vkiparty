@@ -2,23 +2,34 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLang } from '@/context/LangContext';
 
 const NAV_LINKS = [
-  { name: 'About Us', href: '#about' },
-  { name: 'Regulations', href: '#regulations' },
-  { name: 'Sangathan', href: '#sangathan' },
-  { name: 'Core Members', href: '#members' },
-  { name: 'Vision', href: '#vision' },
-  { name: 'Support', href: '#support' },
-  { name: 'FAQs', href: '#faqs' },
+  { name_en: 'About Us',    name_hi: 'हमारे बारे में',  href: '#about' },
+  { name_en: 'Sangathan',   name_hi: 'संगठन',          href: '#sangathan', isDrawer: true, children: [
+    { name_en: 'Ward Node',     name_hi: 'वार्ड इकाई',     icon: '🏘️', href: '/sangathan/ward' },
+    { name_en: 'Village Unit',  name_hi: 'ग्राम इकाई',     icon: '🌾', href: '/sangathan/village' },
+    { name_en: 'Block Level',   name_hi: 'ब्लॉक स्तर',     icon: '🏢', href: '/sangathan/block' },
+    { name_en: 'District',      name_hi: 'जिला समिति',     icon: '🏙️', href: '/sangathan/district' },
+    { name_en: 'State Body',    name_hi: 'प्रदेश कार्यकारिणी', icon: '🗺️', href: '/sangathan/state' },
+  ]},
+  { name_en: 'Regulations', name_hi: 'नियम व विनियम',  href: '#regulations', isDrawer: true, children: [
+    { name_en: 'Mission 2027',  name_hi: 'मिशन 2027',     icon: '🚀', href: '/sangathan/missions' },
+    { name_en: 'Sovereign ID',  name_hi: 'डिजिटल पहचान',   icon: '🛡️', href: '/compliance/privacy' },
+    { name_en: 'Vox Populi',    name_hi: 'लोकमत',         icon: '🗳️', href: '/sangathan/voting' },
+  ]},
+  { name_en: 'Core Members', name_hi: 'प्रमुख सदस्य',   href: '#core-members' },
+  { name_en: 'Vision',      name_hi: 'संकल्प',         href: '#vision' },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [lang, setLang] = useState('EN');
+  const [isOpen, setIsOpen]           = useState(false);
+  const { lang, setLang, t }          = useLang();
+  const [activeDrawer, setActiveDrawer] = useState<string | null>(null);
 
   return (
-    <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl">
+    <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl"
+         onMouseLeave={() => setActiveDrawer(null)}>
       <div className="relative rounded-full border border-white/20 px-4 md:px-8 h-12 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-2xl bg-black/40">
         
         {/* Metallic Gloss Reflection */}
@@ -36,7 +47,7 @@ export default function Navbar() {
           </Link>
           
           <button onClick={() => setLang(lang === 'EN' ? 'HI' : 'EN')}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full border border-white/10 text-[9px] font-black text-white hover:bg-white/10 transition-all">
+            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full border border-white/10 text-[9px] font-black text-white hover:bg-[#fbbf24] hover:text-black transition-all">
             {lang}
           </button>
         </div>
@@ -44,10 +55,14 @@ export default function Navbar() {
         {/* Center: Desktop Links (Jan Suraaj inspired spacing) */}
         <div className="hidden lg:flex items-center gap-6">
           {NAV_LINKS.map((link) => (
-            <Link key={link.name} href={link.href} 
-              className="text-[9px] uppercase tracking-[0.2em] font-black text-white/50 hover:text-[#fbbf24] transition-colors">
-              {link.name}
-            </Link>
+            <div key={link.name_en} className="relative py-4"
+                 onMouseEnter={() => link.isDrawer && setActiveDrawer(link.name_en)}>
+              <Link href={link.href} 
+                className="text-[9px] uppercase tracking-[0.2em] font-black text-white/50 hover:text-[#fbbf24] transition-colors flex items-center gap-1">
+                {t(link.name_en, link.name_hi)}
+                {link.isDrawer && <span className="text-[8px] opacity-40">▼</span>}
+              </Link>
+            </div>
           ))}
         </div>
 
@@ -55,16 +70,16 @@ export default function Navbar() {
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
           <Link href="/compliance/support" 
             className="hidden sm:block text-[9px] px-4 py-2 rounded-full uppercase font-black tracking-widest bg-[#fbbf24] text-black hover:bg-white transition-all">
-            सहयोग करें
+            {t('CONTRIBUTE', 'सहयोग करें')}
           </Link>
           
           <Link href="/auth/login" className="text-[9px] font-black text-white/50 hover:text-white uppercase tracking-widest hidden sm:block">
-            LOGIN
+            {t('LOGIN', 'लॉगिन')}
           </Link>
 
           <Link href="/auth/register" 
             className="text-[9px] px-5 py-2 rounded-full uppercase font-black tracking-widest border border-[#fbbf24] text-[#fbbf24] hover:bg-[#fbbf24] hover:text-black transition-all">
-            JOIN
+            {t('JOIN', 'जुड़ें')}
           </Link>
           
           {/* Mobile Toggle */}
@@ -74,7 +89,31 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu (Floating Drawer style) */}
+      {/* Mega-Menu Drawer Area (Desktop) */}
+      <AnimatePresence>
+        {activeDrawer && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            className="absolute top-14 left-0 right-0 glass rounded-3xl border border-white/10 p-6 shadow-2xl bg-black/80 backdrop-blur-3xl overflow-hidden"
+          >
+             <div className="grid grid-cols-4 lg:grid-cols-5 gap-3">
+                {NAV_LINKS.find(n => n.name_en === activeDrawer)?.children?.map(child => (
+                   <Link key={child.name_en} href={child.href}
+                     className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/[0.04] border border-white/5 hover:border-[#fbbf24]/40 hover:bg-[#fbbf24]/10 transition-all text-center">
+                      <span className="text-2xl group-hover:scale-110 transition-transform">{child.icon}</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-white/40 group-hover:text-[#fbbf24]">
+                         {t(child.name_en, child.name_hi)}
+                      </span>
+                   </Link>
+                ))}
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div 
@@ -85,17 +124,19 @@ export default function Navbar() {
           >
             <div className="px-8 py-10 flex flex-col gap-6 bg-black/90">
                <div className="flex justify-between items-center mb-4">
-                  <span className="text-[10px] font-black text-[#fbbf24] tracking-widest uppercase">NAVIGATION</span>
+                  <span className="text-[10px] font-black text-[#fbbf24] tracking-widest uppercase">{t('NAVIGATION', 'नेविगेशन')}</span>
                   <button onClick={() => setLang(lang === 'EN' ? 'HI' : 'EN')} className="text-[10px] font-black underline">{lang}</button>
                </div>
               {NAV_LINKS.map((link) => (
-                <Link key={link.name} href={link.href} onClick={() => setIsOpen(false)}
+                <Link key={link.name_en} href={link.href} onClick={() => setIsOpen(false)}
                   className="text-xs font-black text-white/60 hover:text-[#fbbf24] tracking-widest uppercase">
-                  {link.name}
+                  {t(link.name_en, link.name_hi)}
                 </Link>
               ))}
               <div className="h-px bg-white/5 my-4" />
-              <Link href="/compliance/support" className="text-xs font-black text-[#fbbf24] uppercase">सहयोग करें (CONTRIBUTE)</Link>
+              <Link href="/compliance/support" className="text-xs font-black text-[#fbbf24] uppercase">
+                 {t('CONTRIBUTE (SAHYOG)', 'सहयोग करें')}
+              </Link>
             </div>
           </motion.div>
         )}

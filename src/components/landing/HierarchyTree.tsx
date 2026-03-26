@@ -1,17 +1,21 @@
 'use client';
 import { motion } from 'framer-motion';
 
+import { useLang } from '@/context/LangContext';
+
 const HIERARCHY = [
-  { level: 'Ward / Tola',       color: '#fbbf24', icon: '🏘️', desc: 'Grassroots unit — Primary digital node' },
-  { level: 'Village',           color: '#fbbf24', icon: '🌾', desc: 'Village network — Community sync' },
-  { level: 'Panchayat',         color: '#fbbf24', icon: '🏛️', desc: 'Panchayat body — Local governance' },
-  { level: 'Gram Panchayat',    color: '#fbbf24', icon: '⚖️', desc: 'Local administrative node' },
-  { level: 'Block / Samiti',    color: '#fbbf24', icon: '🏢', desc: 'Block committee — Cluster coordination' },
-  { level: 'Zila Parishad',     color: '#fbbf24', icon: '🏙️', desc: 'District level — Strategic management' },
-  { level: 'State Committee',   color: '#fbbf24', icon: '🗺️', desc: 'State leadership — Apex regional body' },
+  { level_en: 'Ward / Tola',       level_hi: 'वार्ड / टोला',     color: '#fbbf24', icon: '🏘️', desc_en: 'Grassroots unit', desc_hi: 'बुनियादी इकाई' },
+  { level_en: 'Village',           level_hi: 'ग्राम',            color: '#fbbf24', icon: '🌾', desc_en: 'Village network', desc_hi: 'ग्राम नेटवर्क' },
+  { level_en: 'Panchayat',         level_hi: 'पंचायत',          color: '#fbbf24', icon: '🏛️', desc_en: 'Panchayat body', desc_hi: 'पंचायत समिति' },
+  { level_en: 'Gram Panchayat',    level_hi: 'ग्राम पंचायत',     color: '#fbbf24', icon: '⚖️', desc_en: 'Local administration', desc_hi: 'स्थानीय प्रशासन' },
+  { level_en: 'Block / Samiti',    level_hi: 'ब्लॉक / समिति',     color: '#fbbf24', icon: '🏢', desc_en: 'Block committee', desc_hi: 'प्रखंड समिति' },
+  { level_en: 'Zila Parishad',     level_hi: 'ज़िला परिषद',       color: '#fbbf24', icon: '🏙️', desc_en: 'District level', desc_hi: 'ज़िला स्तर' },
+  { level_en: 'State Committee',   level_hi: 'प्रदेश कार्यकारिणी', color: '#fbbf24', icon: '🗺️', desc_en: 'State leadership', desc_hi: 'राज्य नेतृत्व' },
 ];
 
 export default function HierarchyTree() {
+  const { t } = useLang();
+
   return (
     <section className="py-20 bg-[#F6F4E8] relative overflow-hidden">
       
@@ -23,14 +27,14 @@ export default function HierarchyTree() {
         <div className="text-center mb-16">
           <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-[#fbbf24] text-[10px] font-black uppercase tracking-[0.4em] mb-4">
-             Digital Sangathan Infrastructure
+             {t('Digital Sangathan Infrastructure', 'डिजिटल संगठन अवसंरचना')}
           </motion.div>
           <h2 className="font-display font-black text-4xl md:text-7xl mb-6 tracking-tighter text-black uppercase leading-[0.9]">
-             WARD से <span className="text-[#fbbf24]">STATE</span> तक.
+             {t('WARD TO ', 'वार्ड से ')}<span className="text-[#fbbf24]">{t('STATE', 'प्रदेश')}</span> तक.
           </h2>
           <p className="text-black/40 text-sm md:text-base font-bold tracking-[0.05em] uppercase max-w-2xl mx-auto leading-relaxed">
-             India&apos;s first completely decentralized political hierarchy, 
-             digitally connected for 21-crore karyakartas.
+             {t('India\'s first completely decentralized political hierarchy, digitally connected for 21-crore karyakartas.', 
+                'भारत का पहला पूर्णतः विकेंद्रीकृत राजनीतिक संगठन, 21 करोड़ कार्यकर्ताओं के लिए डिजिटल रूप से जुड़ा हुआ।')}
           </p>
         </div>
 
@@ -53,9 +57,11 @@ export default function HierarchyTree() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-display font-black text-black text-sm md:text-lg uppercase tracking-tight">
-                      {h.level}
+                      {t(h.level_en, h.level_hi)}
                     </div>
-                    <div className="text-black/40 text-[9px] md:text-[10px] font-bold uppercase tracking-widest truncate">{h.desc}</div>
+                    <div className="text-black/40 text-[9px] md:text-[10px] font-bold uppercase tracking-widest truncate">
+                      {t(h.desc_en, h.desc_hi)}
+                    </div>
                   </div>
                   {i === 0 && (
                     <span className="text-[8px] md:text-[9px] px-3 py-1 rounded-full font-black text-white bg-black shrink-0 tracking-widest">
