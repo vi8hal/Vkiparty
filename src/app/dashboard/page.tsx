@@ -3,8 +3,34 @@ import { getSession } from '@/lib/session';
 import prisma from '@/lib/db';
 import DashboardClient from './DashboardClient';
 import { getHierarchyCountsCached } from '@/lib/hierarchy';
+import { unstable_cache } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
+
+// ─── CACHED REGIONAL FEED ────────────────────────────────────
+// Time Complexity: O(1) fetch from Edge Data Cache
+// Memory Complexity: Only stores serialized JSON of 50 most recent posts
+const getCachedRegionalPosts = unstable_cache(
+  async (locationId: string) => {
+    return prisma.feedPost.findMany({
+      where: { locationId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      include: {
+        author: {
+          select: {
+            id: true,
+            fullName: true,
+            designatedPost: true,
+            profilePictureUrl: true,
+          }
+        }
+      }
+    });
+  },
+  ['region-feed'],
+  { revalidate: 60, tags: ['region-feed'] } // Cache for 60 seconds
+);
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -13,7 +39,7 @@ export default async function DashboardPage() {
     redirect('/auth/login');
   }
 
-  // Fetch complete user info and region territory details safely
+  // Fetch complete user info safely (Login is infrequent compared to dashboard feed hit)
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     include: {
@@ -25,30 +51,12 @@ export default async function DashboardPage() {
     redirect('/auth/login');
   }
 
-  // Fetch "Twitter-like" regional feed strictly bounded by locationId
-  // Also includes Noticeboard/Advisories from Admins if they share same region context
-  const regionalPosts = await prisma.feedPost.findMany({
-    where: { 
-      // STRICTLY restricted to user's designated territory
-      locationId: user.locationId 
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-    include: {
-      author: {
-        select: {
-          id: true,
-          fullName: true,
-          designatedPost: true,
-          profilePictureUrl: true,
-        }
-      }
-    }
-  });
+  // Optimized Cached Data Hooks
+  const [regionalPosts, membersCountResult] = await Promise.all([
+    getCachedRegionalPosts(user.locationId),
+    getHierarchyCountsCached(user.locationId)
+  ]);
 
-  // Utilize the pre-existing time-to-memory constrained hierarchy aggregation
-  // Takes actual live stats of dynamic territory
-  const membersCountResult = await getHierarchyCountsCached(user.locationId);
   const totalMembers = membersCountResult.active;
 
   return (

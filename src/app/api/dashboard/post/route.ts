@@ -2,22 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import prisma from '@/lib/db';
 import { PostType } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await request.json();
     const { content, locationId, type } = body;
 
-    // O(1) TIME COMPLEXITY SCALABILITY FIX:
-    // We already cryptographically trust the user's location via the JWT Session!
-    // NO NEED to perform a database `findUnique` read before writing.
-    // This removes half the DB latency and frees connection pooling slots.
-
+    // Strict location-bound security check
     if (session.locationId !== locationId) {
-      return NextResponse.json({ error: 'Forbidden: Cannot post outside your territory bound' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const postActionType = Object.values(PostType).includes(type) ? type : 'GENERAL';
@@ -31,9 +30,12 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Revalidate the dashboard page to show the new post instantly
+    revalidatePath('/dashboard');
+
     return NextResponse.json({ success: true, post });
   } catch (error) {
     console.error('Error creating post:', error);
-    return NextResponse.json({ error: 'Server error creating post' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

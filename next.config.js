@@ -9,6 +9,9 @@ const nextConfig = {
     ],
   },
   serverExternalPackages: ['argon2', 'nodemailer'],
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 module.exports = nextConfig;
