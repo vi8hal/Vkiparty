@@ -35,7 +35,7 @@ export default function LandingPage() {
       <NoticeTicker />
 
       {/* ── MAIN CONTENT LAYOUT ───────────────────────────────── */}
-      <main className="relative pt-24 md:pt-36">
+      <main className="relative pt-20 md:pt-28">
         
         {/* Dynamic Visual Segments */}
         <Hero />

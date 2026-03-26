@@ -28,7 +28,7 @@ export default function Navbar() {
   const [activeDrawer, setActiveDrawer] = useState<string | null>(null);
 
   return (
-    <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl"
+    <nav className="fixed top-12 left-1/2 -translate-x-1/2 z-[60] w-[95%] max-w-7xl"
          onMouseLeave={() => setActiveDrawer(null)}>
       <div className="relative rounded-full border border-white/20 px-6 md:px-10 h-16 flex items-center justify-between overflow-hidden shadow-2xl backdrop-blur-3xl bg-black/60">
         

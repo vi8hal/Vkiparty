@@ -12,7 +12,7 @@ export default function SectionVision() {
   const { t } = useLang();
 
   return (
-    <section id="vision" className="py-6 px-6 relative overflow-hidden bg-vanda">
+    <section id="vision" className="py-6 px-6 relative overflow-hidden bg-vanda scroll-mt-32">
       {/* Background Glow */}
       <div className="absolute inset-0 pointer-events-none opacity-20"
         style={{ background: 'radial-gradient(circle at 70% 30%, #FF6B00 0%, transparent 70%)' }} />

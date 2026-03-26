@@ -73,11 +73,11 @@ export default function Hero() {
   const { t } = useLang();
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center pt-16 overflow-hidden bg-[#0A0A0F]">
+    <section className="relative min-h-[75vh] flex items-center justify-center pt-8 overflow-hidden bg-[#0A0A0F]">
       <BackgroundCarousel />
       <ParticleCanvas />
       
-      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto mt-12">
+      <div className="relative z-10 text-center px-6 max-w-6xl mx-auto mt-4">
         {/* Jan Suraaj Style Badge */}
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 bg-[#fbbf24]/10 border border-[#fbbf24]/20 backdrop-blur-md">

@@ -14,7 +14,7 @@ export default function SectionAbout() {
   const { t } = useLang();
 
   return (
-    <section id="about" className="py-8 px-6 max-w-7xl mx-auto relative">
+    <section id="about" className="py-8 px-6 max-w-7xl mx-auto relative scroll-mt-32">
       <div className="grid lg:grid-cols-2 gap-8 items-center">
         
         {/* Left: Interactive Visual */}

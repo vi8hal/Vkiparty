@@ -17,7 +17,7 @@ export default function HierarchyTree() {
   const { t } = useLang();
 
   return (
-    <section className="py-20 bg-[#F6F4E8] relative overflow-hidden">
+    <section id="sangathan" className="py-20 bg-[#F6F4E8] relative overflow-hidden scroll-mt-32">
       
       {/* Decorative Brand Elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#fbbf24]/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />

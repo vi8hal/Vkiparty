@@ -38,7 +38,7 @@ export default function CoreMembers() {
   const { t } = useLang();
 
   return (
-    <section id="core-members" className="py-20 px-6 max-w-7xl mx-auto">
+    <section id="core-members" className="py-20 px-6 max-w-7xl mx-auto scroll-mt-32">
       <div className="text-center mb-16">
         <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-[#fbbf24] text-[10px] font-black uppercase tracking-[0.4em] mb-4">
