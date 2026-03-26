@@ -121,20 +121,26 @@ export function Footer() {
           
           {/* Newsletter / CTA */}
           <div className="w-full max-w-2xl">
-             <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative group flex-1">
+             <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="relative group flex-1 w-full">
                    <input type="email" placeholder={t('EMAIL ADDRESS', 'ईमेल पता')} 
                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-[10px] font-black text-white uppercase tracking-widest focus:outline-none focus:border-[#fbbf24] transition-all" />
                 </div>
-                <div className="relative group flex-1">
+                
+                <div className="text-[8px] font-black text-white/30 uppercase tracking-widest px-2">{t('OR', 'या')}</div>
+
+                <div className="relative group flex-1 w-full">
                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#fbbf24] opacity-40">📱</div>
                    <input type="tel" placeholder={t('MOBILE (GLOBAL)', 'मोबाइल (ग्लोबल)')} 
                      className="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-5 py-4 text-[10px] font-black text-white uppercase tracking-widest focus:outline-none focus:border-[#fbbf24] transition-all" />
                 </div>
-                <button className="bg-[#fbbf24] text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-colors shadow-2xl shrink-0">
+                <button className="bg-[#fbbf24] text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white transition-colors shadow-2xl shrink-0 w-full sm:w-auto">
                    {t('JOIN CONNECT', 'कनेक्ट से जुड़ें')}
                 </button>
              </div>
+             <p className="mt-4 text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] text-center sm:text-left">
+                * {t('SUBMIT ANY ONE FIELD TO JOIN THE DIGITAL SANGATHAN', 'डिजिटल संगठन में शामिल होने के लिए किसी भी एक क्षेत्र को जमा करें')}
+             </p>
           </div>
         </div>
 
